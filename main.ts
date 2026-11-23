@@ -15,8 +15,19 @@ function validate(text: string): void {
   if (text.trim().length === 0) {
     throw new Error("entry must not be only whitespace");
   }
-  if (text.includes("\n") || text.includes("\r")) {
+  if (text !== text.trim()) {
+    throw new Error("entry must not have leading or trailing whitespace");
+  }
+  if (/[\n\r]/.test(text)) {
     throw new Error("entry must be a single line");
+  }
+  if (!/^v\d+\.\d+\.\d+:/.test(text)) {
+    throw new Error("entry must start with a version tag like v1.9.4:");
+  }
+  // Gate mirrors the sealed scorer: UTF-8 text, 1-160 chars, not only whitespace.
+  const bytes = Buffer.byteLength(text, "utf8");
+  if (bytes < 1) {
+    throw new Error("entry must not be empty");
   }
 }
 
